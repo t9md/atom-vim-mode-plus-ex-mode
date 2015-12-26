@@ -5,6 +5,11 @@
   "description": "ex-mode for vim-mode-plus",
   "repository": "https://github.com/t9md/atom-vim-mode-plus-ex-mode",
   "license": "MIT",
+  "activationCommands": {
+    "atom-text-editor": [
+      "vim-mode-plus-ex-mode:open"
+    ]
+  },
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },

@@ -1,15 +1,18 @@
-{CompositeDisposable} = require 'atom'
+{Emitter, CompositeDisposable} = require 'atom'
 getEditorState = null
 View = require './view'
 
 module.exports =
   activate: ->
     @subscriptions = new CompositeDisposable
-
-    scope = 'atom-text-editor:not([mini])'
-    @subscriptions.add atom.commands.add scope,
+    @subscriptions.add atom.commands.add 'atom-text-editor:not([mini])',
       'vim-mode-plus-ex-mode:open': =>
-        @getView().toggle(@getVimState())
+        if getEditorState?
+          @getView().toggle(@getVimState())
+        else
+          @onDidConsumeVim =>
+            @getView().toggle(@getVimState())
+    @emitter = new Emitter
 
   deactivate: ->
     @subscriptions.dispose()
@@ -25,5 +28,9 @@ module.exports =
     editor = atom.workspace.getActiveTextEditor()
     getEditorState(editor)
 
+  onDidConsumeVim: (fn) ->
+    @emitter.on 'did-consume-vim', fn
+
   consumeVim: (service) ->
     {getEditorState} = service
+    @emitter.emit 'did-consume-vim'
