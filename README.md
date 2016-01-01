@@ -12,6 +12,15 @@ apm install
 apm link
 ```
 
+## keymap
+
+There is no default keymap.
+
+```coffeescript
+'atom-text-editor.vim-mode-plus.normal-mode':
+  ':': 'vim-mode-plus-ex-mode:open'
+```
+
 ### uninstall
 
 ```
