@@ -19,7 +19,7 @@ class View extends SelectListView
   cancelled: ->
     @hide()
 
-  toggle: (@vimState, @commandKind='normalCommands') ->
+  toggle: (@vimState, @commandKind) ->
     if @panel?.isVisible()
       @cancel()
     else

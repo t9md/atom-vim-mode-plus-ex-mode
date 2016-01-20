@@ -4,21 +4,18 @@ View = require './view'
 
 module.exports =
   activate: ->
+    @emitter = new Emitter
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-text-editor:not([mini])',
-      'vim-mode-plus-ex-mode:open': =>
-        if getEditorState?
-          @getView().toggle(@getVimState())
-        else
-          @onDidConsumeVim =>
-            @getView().toggle(@getVimState())
-      'vim-mode-plus-ex-mode:toggle-setting': =>
-        if getEditorState?
-          @getView().toggle(@getVimState(), 'toggleCommands')
-        else
-          @onDidConsumeVim =>
-            @getView().toggle(@getVimState(), 'toggleCommands')
-    @emitter = new Emitter
+      'vim-mode-plus-ex-mode:open': => @toggle('normalCommands')
+      'vim-mode-plus-ex-mode:toggle-setting': => @toggle('toggleCommands')
+
+  toggle: (commandKind) ->
+    if getEditorState?
+      @getView().toggle(@getVimState(), commandKind)
+    else
+      @onDidConsumeVim =>
+        @getView().toggle(@getVimState(), commandKind)
 
   deactivate: ->
     @subscriptions.dispose()
