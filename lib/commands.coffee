@@ -8,9 +8,10 @@ dispatch = (target, command) ->
 w = ({editor}) ->
   editor.save()
 
-wq = ({editor}) ->
+wq = ({editor, editorElement}) ->
   editor.save()
-  atom.workspace.destroyActivePaneItemOrEmptyPane()
+  dispatch(editorElement, 'core:close') # FIXME
+  # atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
 
 # Configuration switch
 # -------------------------
@@ -20,13 +21,16 @@ toggleConfig = (param) ->
   value = atom.config.get(param)
   atom.config.set(param, not value)
 
-toggleShowInvisible = ->
+showInvisible = ->
   toggleConfig('editor.showInvisibles')
 
-toggleSoftWrap = ({editorElement}) ->
+softWrap = ({editorElement}) ->
   dispatch(editorElement, 'editor:toggle-soft-wrap')
 
-toggleLineNumbers = ({editorElement}) ->
+indentGuide = ({editorElement}) ->
+  dispatch(editorElement, 'editor:toggle-indent-guide')
+
+lineNumbers = ({editorElement}) ->
   dispatch(editorElement, 'editor:toggle-line-numbers')
 
 # When number was typed
@@ -40,12 +44,17 @@ moveToLineByPercent = (vimState, count) ->
   vimState.operationStack.run('MoveToLineByPercent')
 
 module.exports = {
-  w, wq,
-
-  toggleShowInvisible
-  toggleSoftWrap
-  toggleLineNumbers
-
-  moveToLine
-  moveToLineByPercent
+  normalCommands: {
+    w, wq,
+  }
+  toggleCommands: {
+    showInvisible
+    softWrap
+    indentGuide
+    lineNumbers
+  }
+  numberCommands: {
+    moveToLine
+    moveToLineByPercent
+  }
 }

@@ -5,30 +5,21 @@ fuzzaldrin = require 'fuzzaldrin'
 MAX_ITEMS = 5
 module.exports =
 class View extends SelectListView
-  @registerCommand: (name, fn) ->
-    @commands[name] = fn
-
-  @registerCommands: (commands) ->
-    @registerCommand(name, fn) for name, fn of commands
-
   @init: ->
-    @commands = {}
-    commands = require './commands'
-    for name, fn of commands
-      @registerCommand(_.dasherize(name), fn)
+    {@normalCommands, @toggleCommands, @numberCommands} = require './commands'
 
   initialize: ->
     @setMaxItems(MAX_ITEMS)
     super
-    @addClass('vim-mode-plus.ex-mode')
+    @addClass('vim-mode-plus-ex-mode')
 
   getFilterKey: ->
-    'name'
+    'displayName'
 
   cancelled: ->
     @hide()
 
-  toggle: (@vimState) ->
+  toggle: (@vimState, @commandKind='normalCommands') ->
     if @panel?.isVisible()
       @cancel()
     else
@@ -36,49 +27,75 @@ class View extends SelectListView
       @show()
 
   show: ->
+    @count = null
     @storeFocusedElement()
     @panel ?= atom.workspace.addModalPanel({item: this})
     @panel.show()
     # commands = _.sortBy(commands, 'displayName')
-    @setItems(@getCommands())
+    @setItems(@getItemsFor(@commandKind))
     @focusFilterEditor()
 
-  hiddenCommands = ['move-to-line', 'move-to-line-by-percent']
-  getCommands: ->
-    _.keys(@constructor.commands)
-      .filter (e) -> e not in hiddenCommands
-      .sort()
-      .map (e) -> {name: e}
+  getItemsFor: (kind) ->
+    commands = _.keys(@constructor[kind]).sort()
+    humanize = (name) -> _.humanizeEventName(_.dasherize(name))
+    switch kind
+      when 'normalCommands'
+        commands.map (name) -> {name, displayName: name}
+      when 'toggleCommands', 'numberCommands'
+        commands.map (name) -> {name, displayName: humanize(name)}
 
-  executeCommand: (name) ->
-    action = @constructor.commands[name]
+  executeCommand: (kind, name) ->
+    action = @constructor[kind][name]
     action(@vimState, @count)
 
   hide: ->
     @panel?.hide()
 
+  getCommandKindFromQuery: (query) ->
+    if query.match(/^!/)
+      'toggleCommands'
+    else if query.match(/(\d+)(%)?$/)
+      'numberCommands'
+    else
+      null
+
   # Use as command missing hook.
   getEmptyMessage: (itemCount, filteredItemCount) ->
-    matched = @getFilterQuery().match(/(\d+)(%)?$/)
-    return unless matched
+    query = @getFilterQuery()
+    return unless @commandKind = @getCommandKindFromQuery(query)
 
-    [number, percent] = matched[1..2]
-    @count = Number(number)
-    name = switch
-      when number? and percent? then 'move-to-line-by-percent'
-      when number? then 'move-to-line'
-    item = {name}
+    items = @getItemsFor(@commandKind)
+    switch @commandKind
+      when 'toggleCommands'
+        filterQuery = query[1...] # to trim first '!'
+        items = fuzzaldrin.filter(items, filterQuery, key: @getFilterKey())
+      when 'numberCommands'
+        [number, percent] = query.match(/(\d+)(%)?$/)[1..2]
+        @count = Number(number)
+        items = items.filter ({name}) ->
+          if percent?
+            name is 'moveToLineByPercent'
+          else
+            name is 'moveToLine'
 
     @setError(null)
-    itemView = $(@viewForItem(item))
-    itemView.data('select-list-item', item)
-    @list.append(itemView)
+    @setFallbackItems(items)
     @selectItemView(@list.find('li:first'))
 
-  viewForItem: ({name}) ->
+  setFallbackItems: (items) ->
+    for item in items
+      itemView = $(@viewForItem(item))
+      itemView.data('select-list-item', item)
+      @list.append(itemView)
+
+  viewForItem: ({displayName}) ->
+    # console.log displayName
     # Style matched characters in search results
     filterQuery = @getFilterQuery()
-    matches = fuzzaldrin.match(name, filterQuery)
+    filterQuery = filterQuery[1..] if filterQuery.startsWith('!')
+
+    matches = fuzzaldrin.match(displayName, filterQuery)
+    # console.log matches
     $$ ->
       highlighter = (command, matches, offsetIndex) =>
         lastIndex = 0
@@ -100,8 +117,8 @@ class View extends SelectListView
         @text command.substring(lastIndex)
 
       @li class: 'event', 'data-event-name': name, =>
-        @span title: name, -> highlighter(name, matches, 0)
+        @span title: displayName, -> highlighter(displayName, matches, 0)
 
   confirmed: ({name}) ->
     @cancel()
-    @executeCommand(name)
+    @executeCommand(@commandKind, name)

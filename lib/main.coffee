@@ -12,6 +12,12 @@ module.exports =
         else
           @onDidConsumeVim =>
             @getView().toggle(@getVimState())
+      'vim-mode-plus-ex-mode:toggle-setting': =>
+        if getEditorState?
+          @getView().toggle(@getVimState(), 'toggleCommands')
+        else
+          @onDidConsumeVim =>
+            @getView().toggle(@getVimState(), 'toggleCommands')
     @emitter = new Emitter
 
   deactivate: ->
