@@ -11,7 +11,14 @@ w = ({editor}) ->
 wq = ({editor, editorElement}) ->
   editor.save()
   dispatch(editorElement, 'core:close') # FIXME
-  # atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
+
+split = ({editor, editorElement}) ->
+  editor.save()
+  dispatch(editorElement, 'pane:split-down')
+
+vsplit = ({editor, editorElement}) ->
+  editor.save()
+  dispatch(editorElement, 'pane:split-right')
 
 # Configuration switch
 # -------------------------
@@ -45,7 +52,7 @@ moveToLineByPercent = (vimState, count) ->
 
 module.exports = {
   normalCommands: {
-    w, wq,
+    w, wq, split, vsplit
   }
   toggleCommands: {
     showInvisible
