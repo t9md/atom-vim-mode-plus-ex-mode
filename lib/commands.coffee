@@ -43,11 +43,11 @@ lineNumbers = ({editorElement}) ->
 # When number was typed
 # -------------------------
 moveToLine = (vimState, count) ->
-  vimState.count.set(count)
+  vimState.setCount(count)
   vimState.operationStack.run('MoveToFirstLine')
 
 moveToLineByPercent = (vimState, count) ->
-  vimState.count.set(count)
+  vimState.setCount(count)
   vimState.operationStack.run('MoveToLineByPercent')
 
 module.exports = {
