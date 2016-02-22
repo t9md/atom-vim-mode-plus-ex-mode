@@ -8,17 +8,28 @@ dispatch = (target, command) ->
 w = ({editor}) ->
   editor.save()
 
+q = ({editorElement}) ->
+  atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
+
+qall = ->
+  for item in atom.workspace.getPaneItems()
+    atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
+
+wqall = ->
+  for editor in atom.workspace.getTextEditors() when editor.isModified()
+    w({editor})
+  qall()
+
 wq = ({editor, editorElement}) ->
   editor.save()
-  dispatch(editorElement, 'core:close') # FIXME
+  atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
 
 split = ({editor, editorElement}) ->
-  editor.save()
   dispatch(editorElement, 'pane:split-down')
 
 vsplit = ({editor, editorElement}) ->
-  editor.save()
   dispatch(editorElement, 'pane:split-right')
+
 
 # Configuration switch
 # -------------------------
@@ -30,6 +41,9 @@ toggleConfig = (param) ->
 
 showInvisible = ->
   toggleConfig('editor.showInvisibles')
+
+highlightSearch = ->
+  toggleConfig('vim-mode-plus.highlightSearch')
 
 softWrap = ({editorElement}) ->
   dispatch(editorElement, 'editor:toggle-soft-wrap')
@@ -50,18 +64,24 @@ moveToLineByPercent = (vimState, count) ->
   vimState.setCount(count)
   vimState.operationStack.run('MoveToLineByPercent')
 
-module.exports = {
+module.exports =
   normalCommands: {
-    w, wq, split, vsplit
+    w
+    wq
+    wqall
+    q
+    qall
+    split
+    vsplit
   }
   toggleCommands: {
     showInvisible
     softWrap
     indentGuide
     lineNumbers
+    highlightSearch
   }
   numberCommands: {
     moveToLine
     moveToLineByPercent
   }
-}
