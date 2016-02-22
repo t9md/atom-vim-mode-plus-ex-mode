@@ -14,7 +14,6 @@ There is no default keymap.
 
 # How to use
 
-
 `11` to move to line 11
 `50%` to move to 50% of buffer.
 `!` to toggle bolean config parameter
