@@ -5,24 +5,27 @@ dispatch = (target, command) ->
 
 # ex command
 # -------------------------
-w = ({editor}) ->
-  editor.save()
+w = ->
+  atom.workspace.saveActivePaneItem()
 
-q = ({editorElement}) ->
+q = ->
   atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
 
+wq = ->
+  w()
+  q()
+
 qall = ->
-  for item in atom.workspace.getPaneItems()
-    atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
+  q() for item in atom.workspace.getPaneItems()
+    # q()
+    # atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
 
 wqall = ->
+  # wq()
   for editor in atom.workspace.getTextEditors() when editor.isModified()
     w({editor})
   qall()
 
-wq = ({editor, editorElement}) ->
-  editor.save()
-  atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
 
 split = ({editor, editorElement}) ->
   dispatch(editorElement, 'pane:split-down')
