@@ -5,8 +5,11 @@ dispatch = (target, command) ->
 
 # ex command
 # -------------------------
-w = ->
-  atom.workspace.saveActivePaneItem()
+w = ({editor}={}) ->
+  if editor?.getPath()
+    editor.save()
+  else
+    atom.workspace.saveActivePaneItem()
 
 q = ->
   atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
@@ -17,15 +20,14 @@ wq = ->
 
 qall = ->
   q() for item in atom.workspace.getPaneItems()
-    # q()
-    # atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
+
+wall = ->
+  w({editor}) for editor in atom.workspace.getTextEditors() when editor.isModified()
 
 wqall = ->
-  # wq()
-  for editor in atom.workspace.getTextEditors() when editor.isModified()
-    w({editor})
-  qall()
-
+  for item in atom.workspace.getPaneItems()
+    w()
+    q()
 
 split = ({editor, editorElement}) ->
   dispatch(editorElement, 'pane:split-down-and-copy-active-item')
@@ -33,10 +35,8 @@ split = ({editor, editorElement}) ->
 vsplit = ({editor, editorElement}) ->
   dispatch(editorElement, 'pane:split-right-and-copy-active-item')
 
-
 # Configuration switch
 # -------------------------
-
 # Util
 toggleConfig = (param) ->
   value = atom.config.get(param)
@@ -71,6 +71,7 @@ module.exports =
   normalCommands: {
     w
     wq
+    wall
     wqall
     q
     qall
