@@ -5,13 +5,11 @@ fuzzaldrin = require 'fuzzaldrin'
 MAX_ITEMS = 5
 module.exports =
 class View extends SelectListView
-  @init: ->
-    {@normalCommands, @toggleCommands, @numberCommands} = require './commands'
-
   initialize: ->
     @setMaxItems(MAX_ITEMS)
-    super
+    @commands = require './commands'
     @addClass('vim-mode-plus-ex-mode')
+    super
 
   getFilterKey: ->
     'displayName'
@@ -36,7 +34,7 @@ class View extends SelectListView
     @focusFilterEditor()
 
   getItemsFor: (kind) ->
-    commands = _.keys(@constructor[kind]).sort()
+    commands = _.keys(@commands[kind]).sort()
     humanize = (name) -> _.humanizeEventName(_.dasherize(name))
     switch kind
       when 'normalCommands'
@@ -45,7 +43,7 @@ class View extends SelectListView
         commands.map (name) -> {name, displayName: humanize(name)}
 
   executeCommand: (kind, name) ->
-    action = @constructor[kind][name]
+    action = @commands[kind][name]
     action(@vimState, @count)
 
   hide: ->

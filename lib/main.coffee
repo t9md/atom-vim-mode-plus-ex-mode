@@ -1,6 +1,5 @@
 {Emitter, CompositeDisposable} = require 'atom'
 getEditorState = null
-View = require './view'
 
 module.exports =
   activate: ->
@@ -11,11 +10,17 @@ module.exports =
       'vim-mode-plus-ex-mode:toggle-setting': => @toggle('toggleCommands')
 
   toggle: (commandKind) ->
+    editor = atom.workspace.getActiveTextEditor()
+    @getEditorState(editor).then (vimState) =>
+      @getView().toggle(vimState, commandKind)
+
+  getEditorState: (editor) ->
     if getEditorState?
-      @getView().toggle(@getVimState(), commandKind)
+      Promise.resolve(getEditorState(editor))
     else
-      @onDidConsumeVim =>
-        @getView().toggle(@getVimState(), commandKind)
+      new Promise (resolve) =>
+        @onDidConsumeVim ->
+          resolve(getEditorState(editor))
 
   deactivate: ->
     @subscriptions.dispose()
@@ -23,17 +28,11 @@ module.exports =
     {@subscriptions, @view} = {}
 
   getView: ->
-    return @view if @view?
-    View.init()
-    @view = new View()
-
-  getVimState: ->
-    editor = atom.workspace.getActiveTextEditor()
-    getEditorState(editor)
+    @view ?= new (require('./view'))
 
   onDidConsumeVim: (fn) ->
-    @emitter.on 'did-consume-vim', fn
+    @emitter.on('did-consume-vim', fn)
 
   consumeVim: (service) ->
     {getEditorState} = service
-    @emitter.emit 'did-consume-vim'
+    @emitter.emit('did-consume-vim')
