@@ -28,10 +28,10 @@ wqall = ->
 
 
 split = ({editor, editorElement}) ->
-  dispatch(editorElement, 'pane:split-down')
+  dispatch(editorElement, 'pane:split-down-and-copy-active-item')
 
 vsplit = ({editor, editorElement}) ->
-  dispatch(editorElement, 'pane:split-right')
+  dispatch(editorElement, 'pane:split-right-and-copy-active-item')
 
 
 # Configuration switch
