@@ -5,6 +5,16 @@ fuzzaldrin = require 'fuzzaldrin'
 MAX_ITEMS = 5
 module.exports =
 class View extends SelectListView
+  initialInput: null
+
+  # Disable throttling populateList for initialInput
+  schedulePopulateList: ->
+    if @initialInput
+      @populateList() if @isOnDom()
+      @initialInput = false
+    else
+      super
+
   initialize: ->
     @setMaxItems(MAX_ITEMS)
     @commands = require './commands'
@@ -25,16 +35,16 @@ class View extends SelectListView
       @show()
 
   show: ->
+    @initialInput = true
     @count = null
     @storeFocusedElement()
     @panel ?= atom.workspace.addModalPanel({item: this})
     @panel.show()
-    # commands = _.sortBy(commands, 'displayName')
     @setItems(@getItemsFor(@commandKind))
     @focusFilterEditor()
 
   getItemsFor: (kind) ->
-    commands = _.keys(@commands[kind]).sort()
+    commands = _.keys(@commands[kind])
     humanize = (name) -> _.humanizeEventName(_.dasherize(name))
     switch kind
       when 'normalCommands'
