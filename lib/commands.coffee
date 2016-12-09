@@ -18,6 +18,10 @@ wq = ->
   w()
   q()
 
+x = ->
+  w()
+  q()
+
 qall = ->
   q() for item in atom.workspace.getPaneItems()
 
@@ -71,6 +75,7 @@ module.exports =
   normalCommands: {
     w
     wq
+    x
     wall
     wqall
     q
