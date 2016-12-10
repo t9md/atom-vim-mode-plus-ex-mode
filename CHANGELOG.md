@@ -1,3 +1,6 @@
+## 0.6.1
+- Fix: Bug
+
 ## 0.6.0
 - New: `x` command(alias of `wq`) by @nwaywood
 - New: `xall` command(alias of `wqall`)
