@@ -83,6 +83,6 @@ module.exports =
   }
   numberCommands: {
     moveToLine
-    moveToLineAndColummn
+    moveToLineAndColumn
     moveToLineByPercent
   }

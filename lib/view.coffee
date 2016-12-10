@@ -97,7 +97,7 @@ class View extends SelectListView
         else if match = query.match(/^(\d+):(\d+)/)
           [row, column] = [Number(match[1]), Number(match[2])]
           @commandOptions = {row, column}
-          items = filterItemsByName(items, 'moveToLineAndColummn')
+          items = filterItemsByName(items, 'moveToLineAndColumn')
 
     @setError(null)
     @setFallbackItems(items)
