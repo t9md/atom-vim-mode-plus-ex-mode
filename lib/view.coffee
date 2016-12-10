@@ -109,7 +109,6 @@ class View extends SelectListView
         @span title: displayName, =>
           highlightMatches(this, displayName, matches, 0)
 
-  confirmed: (item) ->
+  confirmed: ({kind, name, options}) ->
     @cancel()
-    command = @commands[item.kind][item.name]
-    command(@vimState, item.options)
+    @commands[kind][name](@vimState, options)
