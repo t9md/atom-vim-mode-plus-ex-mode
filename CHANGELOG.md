@@ -1,3 +1,9 @@
+## 0.7.0
+- Improve: Cleanup
+- Improve: Cache select-list-item once generated.
+- Improve: Make `MoveToLineAndColumn` motion to `characterwise`
+- Breaking: List item was limited to max=5, but now no longer set max items.
+
 ## 0.6.1
 - Fix: Bug
 
