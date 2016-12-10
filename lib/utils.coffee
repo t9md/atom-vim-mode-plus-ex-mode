@@ -4,10 +4,6 @@ toggleConfig = (param) ->
   value = atom.config.get(param)
   atom.config.set(param, not value)
 
-filterItemsByName = (items, name) ->
-  items.filter (item) ->
-    item.name is name
-
 humanize = (name) ->
   _.humanizeEventName(_.dasherize(name))
 
@@ -30,4 +26,4 @@ highlightMatches = (context, name, matches, offsetIndex=0) ->
   context.span matchedChars.join(''), class: 'character-match' if matchedChars.length
   context.text name.substring(lastIndex) # Remaining characters are plain text
 
-module.exports = {toggleConfig, filterItemsByName, humanize, highlightMatches}
+module.exports = {toggleConfig, humanize, highlightMatches}

@@ -1,7 +1,7 @@
 _ = require 'underscore-plus'
 {SelectListView, $, $$} = require 'atom-space-pen-views'
 fuzzaldrin = require 'fuzzaldrin'
-{filterItemsByName, humanize, highlightMatches} = require './utils'
+{humanize, highlightMatches} = require './utils'
 
 module.exports =
 class View extends SelectListView
