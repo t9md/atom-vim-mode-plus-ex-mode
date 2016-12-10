@@ -9,21 +9,12 @@ w = ({editor}={}) ->
     atom.workspace.saveActivePaneItem()
 
 q = -> atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
-
-wq = -> w(); q()
-x = wq
-
+wq = x = -> w(); q()
 qall = -> q() for item in atom.workspace.getPaneItems()
 wall = -> w({editor}) for editor in atom.workspace.getTextEditors() when editor.isModified()
-
-wqall = -> wq() for item in atom.workspace.getPaneItems()
-xall = wqall
-
-split = ({editor, editorElement}) ->
-  atom.commands.dispatch(editorElement, 'pane:split-down-and-copy-active-item')
-
-vsplit = ({editor, editorElement}) ->
-  atom.commands.dispatch(editorElement, 'pane:split-right-and-copy-active-item')
+wqall = xall = -> wq() for item in atom.workspace.getPaneItems()
+split = ({editor, editorElement}) -> atom.commands.dispatch(editorElement, 'pane:split-down-and-copy-active-item')
+vsplit = ({editor, editorElement}) -> atom.commands.dispatch(editorElement, 'pane:split-right-and-copy-active-item')
 
 # Configuration switch
 # -------------------------

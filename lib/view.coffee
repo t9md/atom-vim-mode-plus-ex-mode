@@ -6,6 +6,7 @@ fuzzaldrin = require 'fuzzaldrin'
 module.exports =
 class View extends SelectListView
   initialInput: null
+  itemsCache: null
 
   # Disable throttling populateList for initialInput
   schedulePopulateList: ->
@@ -35,7 +36,6 @@ class View extends SelectListView
 
   show: (commandKind) ->
     @initialInput = true
-    @commandOptions = {}
     @storeFocusedElement()
     @panel ?= atom.workspace.addModalPanel({item: this})
     @panel.show()
@@ -43,8 +43,14 @@ class View extends SelectListView
     @focusFilterEditor()
 
   getItemsForKind: (kind) ->
-    commands = _.keys(@commands[kind])
-    commands.map (name) => @getItem(kind, name)
+    @itemsCache ?= {}
+    if kind of @itemsCache
+      @itemsCache[kind]
+    else
+      commands = _.keys(@commands[kind])
+      items = commands.map (name) => @getItem(kind, name)
+      @itemsCache[kind] = items
+      items
 
   getItem: (kind, name) ->
     if kind in ['toggleCommands', 'numberCommands']
