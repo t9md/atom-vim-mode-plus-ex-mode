@@ -1,10 +1,7 @@
 _ = require 'underscore-plus'
 {SelectListView, $, $$} = require 'atom-space-pen-views'
 fuzzaldrin = require 'fuzzaldrin'
-
-filterItemsByName = (items, name) ->
-  items.filter (item) ->
-    item.name is name
+{filterItemsByName, humanize} = require './utils'
 
 MAX_ITEMS = 5
 module.exports =
@@ -31,34 +28,29 @@ class View extends SelectListView
   cancelled: ->
     @hide()
 
-  toggle: (@vimState, @commandKind) ->
+  toggle: (@vimState, commandKind) ->
     if @panel?.isVisible()
       @cancel()
     else
       {@editorElement, @editor} = @vimState
-      @show()
+      @show(commandKind)
 
-  show: ->
+  show: (commandKind) ->
     @initialInput = true
     @commandOptions = {}
     @storeFocusedElement()
     @panel ?= atom.workspace.addModalPanel({item: this})
     @panel.show()
-    @setItems(@getItemsFor(@commandKind))
+    @setItems(@getItemsForKind(commandKind))
     @focusFilterEditor()
 
-  getItemsFor: (kind) ->
+  getItemsForKind: (kind) ->
     commands = _.keys(@commands[kind])
-    humanize = (name) -> _.humanizeEventName(_.dasherize(name))
     switch kind
       when 'normalCommands'
-        commands.map (name) -> {name, displayName: name}
+        commands.map (name) -> {name, kind, displayName: name}
       when 'toggleCommands', 'numberCommands'
-        commands.map (name) -> {name, displayName: humanize(name)}
-
-  executeCommand: (kind, name) ->
-    action = @commands[kind][name]
-    action(@vimState, @commandOptions)
+        commands.map (name) -> {name, kind, displayName: humanize(name)}
 
   hide: ->
     @panel?.hide()
@@ -66,13 +58,7 @@ class View extends SelectListView
   getCommandKindFromQuery: (query) ->
     if /^!/.test(query)
       'toggleCommands'
-    else if /^\d+$/.test(query)
-      'numberCommands'
-    else if /^\d+%$/.test(query)
-      'numberCommands'
-    else if /^\d+:\d+%$/.test(query)
-      'numberCommands'
-    else if query.match(/(\d+)(%)?$/)
+    else if /^\d/.test(query)
       'numberCommands'
     else
       null
@@ -80,17 +66,20 @@ class View extends SelectListView
   # Use as command missing hook.
   getEmptyMessage: (itemCount, filteredItemCount) ->
     query = @getFilterQuery()
-    return unless @commandKind = @getCommandKindFromQuery(query)
+    return unless commandKind = @getCommandKindFromQuery(query)
 
-    items = @getItemsFor(@commandKind)
-    switch @commandKind
+    items = []
+    switch commandKind
       when 'toggleCommands'
         filterQuery = query[1...] # to trim first '!'
+        items = @getItemsForKind('toggleCommands')
         items = fuzzaldrin.filter(items, filterQuery, key: @getFilterKey())
       when 'numberCommands'
+        items = @getItemsForKind('numberCommands')
         if match = query.match(/^(\d+)+$/)
           @commandOptions = {row: Number(match[1])}
           items = filterItemsByName(items, 'moveToLine')
+          # console.log items[0]
         else if match = query.match(/^(\d+)%/)
           @commandOptions = {percent: Number(match[1])}
           items = filterItemsByName(items, 'moveToLineByPercent')
@@ -110,13 +99,11 @@ class View extends SelectListView
       @list.append(itemView)
 
   viewForItem: ({displayName}) ->
-    # console.log displayName
     # Style matched characters in search results
     filterQuery = @getFilterQuery()
     filterQuery = filterQuery[1..] if filterQuery.startsWith('!')
 
     matches = fuzzaldrin.match(displayName, filterQuery)
-    # console.log matches
     $$ ->
       highlighter = (command, matches, offsetIndex) =>
         lastIndex = 0
@@ -140,6 +127,7 @@ class View extends SelectListView
       @li class: 'event', 'data-event-name': name, =>
         @span title: displayName, -> highlighter(displayName, matches, 0)
 
-  confirmed: ({name}) ->
+  confirmed: (item) ->
     @cancel()
-    @executeCommand(@commandKind, name)
+    command = @commands[item.kind][item.name]
+    command(@vimState, @commandOptions)

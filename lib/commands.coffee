@@ -1,7 +1,4 @@
-# Utils
-# -------------------------
-dispatch = (target, command) ->
-  atom.commands.dispatch(target, command)
+{toggleConfig} = require './utils'
 
 # ex command
 # -------------------------
@@ -23,32 +20,18 @@ wqall = -> wq() for item in atom.workspace.getPaneItems()
 xall = wqall
 
 split = ({editor, editorElement}) ->
-  dispatch(editorElement, 'pane:split-down-and-copy-active-item')
+  atom.commands.dispatch(editorElement, 'pane:split-down-and-copy-active-item')
 
 vsplit = ({editor, editorElement}) ->
-  dispatch(editorElement, 'pane:split-right-and-copy-active-item')
+  atom.commands.dispatch(editorElement, 'pane:split-right-and-copy-active-item')
 
 # Configuration switch
 # -------------------------
-# Util
-toggleConfig = (param) ->
-  value = atom.config.get(param)
-  atom.config.set(param, not value)
-
-showInvisible = ->
-  toggleConfig('editor.showInvisibles')
-
-highlightSearch = ->
-  toggleConfig('vim-mode-plus.highlightSearch')
-
-softWrap = ({editorElement}) ->
-  dispatch(editorElement, 'editor:toggle-soft-wrap')
-
-indentGuide = ({editorElement}) ->
-  dispatch(editorElement, 'editor:toggle-indent-guide')
-
-lineNumbers = ({editorElement}) ->
-  dispatch(editorElement, 'editor:toggle-line-numbers')
+showInvisible = -> toggleConfig('editor.showInvisibles')
+highlightSearch = -> toggleConfig('vim-mode-plus.highlightSearch')
+softWrap = ({editorElement}) -> atom.commands.dispatch(editorElement, 'editor:toggle-soft-wrap')
+indentGuide = ({editorElement}) -> atom.commands.dispatch(editorElement, 'editor:toggle-indent-guide')
+lineNumbers = ({editorElement}) -> atom.commands.dispatch(editorElement, 'editor:toggle-line-numbers')
 
 # When number was typed
 # -------------------------
@@ -64,25 +47,28 @@ moveToLineByPercent = (vimState, {percent}) ->
   vimState.setCount(percent)
   vimState.operationStack.run('MoveToLineByPercent')
 
-module.exports =
-  normalCommands: {
-    w
-    wq, x
-    wall
-    wqall, xall
-    q
-    qall
-    split, vsplit
-  }
-  toggleCommands: {
-    showInvisible
-    softWrap
-    indentGuide
-    lineNumbers
-    highlightSearch
-  }
-  numberCommands: {
-    moveToLine
-    moveToLineAndColumn
-    moveToLineByPercent
-  }
+normalCommands = {
+  w
+  wq, x
+  wall
+  wqall, xall
+  q
+  qall
+  split, vsplit
+}
+
+toggleCommands = {
+  showInvisible
+  softWrap
+  indentGuide
+  lineNumbers
+  highlightSearch
+}
+
+numberCommands = {
+  moveToLine
+  moveToLineAndColumn
+  moveToLineByPercent
+}
+
+module.exports = {normalCommands, toggleCommands, numberCommands}

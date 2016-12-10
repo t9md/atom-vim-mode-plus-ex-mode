@@ -5,12 +5,14 @@ module.exports =
   activate: ->
     @emitter = new Emitter
     @subscriptions = new CompositeDisposable
+    self = this
     @subscriptions.add atom.commands.add 'atom-text-editor:not([mini])',
-      'vim-mode-plus-ex-mode:open': => @toggle('normalCommands')
-      'vim-mode-plus-ex-mode:toggle-setting': => @toggle('toggleCommands')
+      'vim-mode-plus-ex-mode:open': ->
+        self.toggle(@getModel(), 'normalCommands')
+      'vim-mode-plus-ex-mode:toggle-setting': ->
+        self.toggle(@getModel(), 'toggleCommands')
 
-  toggle: (commandKind) ->
-    editor = atom.workspace.getActiveTextEditor()
+  toggle: (editor, commandKind) ->
     @getEditorState(editor).then (vimState) =>
       @getView().toggle(vimState, commandKind)
 
@@ -41,12 +43,12 @@ module.exports =
     class MoveToLineAndColumn extends Base.getClass('MoveToFirstLine')
       @extend()
       @commandPrefix: 'vim-mode-plus-user'
+      wise: 'characterwise'
       column: null
 
       moveCursor: (cursor) ->
         super
-        if @column?
-          point = [cursor.getBufferRow(), @column - 1]
-          cursor.setBufferPosition(point)
+        point = [cursor.getBufferRow(), @column - 1]
+        cursor.setBufferPosition(point)
 
     @emitter.emit('did-consume-vim')
