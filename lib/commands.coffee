@@ -11,27 +11,16 @@ w = ({editor}={}) ->
   else
     atom.workspace.saveActivePaneItem()
 
-q = ->
-  atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
+q = -> atom.workspace.closeActivePaneItemOrEmptyPaneOrWindow()
 
-wq = ->
-  w()
-  q()
+wq = -> w(); q()
+x = wq
 
-x = ->
-  w()
-  q()
+qall = -> q() for item in atom.workspace.getPaneItems()
+wall = -> w({editor}) for editor in atom.workspace.getTextEditors() when editor.isModified()
 
-qall = ->
-  q() for item in atom.workspace.getPaneItems()
-
-wall = ->
-  w({editor}) for editor in atom.workspace.getTextEditors() when editor.isModified()
-
-wqall = ->
-  for item in atom.workspace.getPaneItems()
-    w()
-    q()
+wqall = -> wq() for item in atom.workspace.getPaneItems()
+xall = wqall
 
 split = ({editor, editorElement}) ->
   dispatch(editorElement, 'pane:split-down-and-copy-active-item')
@@ -63,25 +52,27 @@ lineNumbers = ({editorElement}) ->
 
 # When number was typed
 # -------------------------
-moveToLine = (vimState, count) ->
-  vimState.setCount(count)
+moveToLine = (vimState, {row}) ->
+  vimState.setCount(row)
   vimState.operationStack.run('MoveToFirstLine')
 
-moveToLineByPercent = (vimState, count) ->
-  vimState.setCount(count)
+moveToLineAndColumn = (vimState, {row, column}) ->
+  vimState.setCount(row)
+  vimState.operationStack.run('MoveToLineAndColumn', {column})
+
+moveToLineByPercent = (vimState, {percent}) ->
+  vimState.setCount(percent)
   vimState.operationStack.run('MoveToLineByPercent')
 
 module.exports =
   normalCommands: {
     w
-    wq
-    x
+    wq, x
     wall
-    wqall
+    wqall, xall
     q
     qall
-    split
-    vsplit
+    split, vsplit
   }
   toggleCommands: {
     showInvisible
@@ -92,5 +83,6 @@ module.exports =
   }
   numberCommands: {
     moveToLine
+    moveToLineAndColummn
     moveToLineByPercent
   }

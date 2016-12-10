@@ -34,5 +34,19 @@ module.exports =
     @emitter.on('did-consume-vim', fn)
 
   consumeVim: (service) ->
-    {getEditorState} = service
+    {getEditorState, Base} = service
+    Motion =
+
+    # keymap: g g
+    class MoveToLineAndColumn extends Base.getClass('MoveToFirstLine')
+      @extend()
+      @commandPrefix: 'vim-mode-plus-user'
+      column: null
+
+      moveCursor: (cursor) ->
+        super
+        if @column?
+          point = [cursor.getBufferRow(), @column - 1]
+          cursor.setBufferPosition(point)
+
     @emitter.emit('did-consume-vim')

@@ -2,6 +2,10 @@ _ = require 'underscore-plus'
 {SelectListView, $, $$} = require 'atom-space-pen-views'
 fuzzaldrin = require 'fuzzaldrin'
 
+filterItemsByName = (items, name) ->
+  items.filter (item) ->
+    item.name is name
+
 MAX_ITEMS = 5
 module.exports =
 class View extends SelectListView
@@ -36,7 +40,7 @@ class View extends SelectListView
 
   show: ->
     @initialInput = true
-    @count = null
+    @commandOptions = {}
     @storeFocusedElement()
     @panel ?= atom.workspace.addModalPanel({item: this})
     @panel.show()
@@ -54,14 +58,20 @@ class View extends SelectListView
 
   executeCommand: (kind, name) ->
     action = @commands[kind][name]
-    action(@vimState, @count)
+    action(@vimState, @commandOptions)
 
   hide: ->
     @panel?.hide()
 
   getCommandKindFromQuery: (query) ->
-    if query.match(/^!/)
+    if /^!/.test(query)
       'toggleCommands'
+    else if /^\d+$/.test(query)
+      'numberCommands'
+    else if /^\d+%$/.test(query)
+      'numberCommands'
+    else if /^\d+:\d+%$/.test(query)
+      'numberCommands'
     else if query.match(/(\d+)(%)?$/)
       'numberCommands'
     else
@@ -78,13 +88,16 @@ class View extends SelectListView
         filterQuery = query[1...] # to trim first '!'
         items = fuzzaldrin.filter(items, filterQuery, key: @getFilterKey())
       when 'numberCommands'
-        [number, percent] = query.match(/(\d+)(%)?$/)[1..2]
-        @count = Number(number)
-        items = items.filter ({name}) ->
-          if percent?
-            name is 'moveToLineByPercent'
-          else
-            name is 'moveToLine'
+        if match = query.match(/^(\d+)+$/)
+          @commandOptions = {row: Number(match[1])}
+          items = filterItemsByName(items, 'moveToLine')
+        else if match = query.match(/^(\d+)%/)
+          @commandOptions = {percent: Number(match[1])}
+          items = filterItemsByName(items, 'moveToLineByPercent')
+        else if match = query.match(/^(\d+):(\d+)/)
+          [row, column] = [Number(match[1]), Number(match[2])]
+          @commandOptions = {row, column}
+          items = filterItemsByName(items, 'moveToLineAndColummn')
 
     @setError(null)
     @setFallbackItems(items)

@@ -1,3 +1,8 @@
+## 0.6.0
+- New: `x` command(alias of `wq`) by @nwaywood
+- New: `xall` command(alias of `wqall`)
+- New: `moveToLineAndColumn` command. input with `line:column` e.g. `10:13`(line=10, column=13)
+
 ## 0.5.0
 - Fix: Fast typing :w results in q command because #8
 
