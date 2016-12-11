@@ -1,3 +1,6 @@
+## 0.7.1:
+- New: `Move To Relative Line` e.g. `+5`, `-5` by @gabeboning.
+
 ## 0.7.0
 - Improve: Cleanup
 - Improve: Cache select-list-item once generated.

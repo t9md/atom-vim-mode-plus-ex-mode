@@ -37,9 +37,9 @@ moveToLineAndColumn = (vimState, {row, column}) ->
 moveToLineByPercent = (vimState, {percent}) ->
   vimState.setCount(percent)
   vimState.operationStack.run('MoveToLineByPercent')
-  
+
 moveToRelativeLine = (vimState, {offset}) ->
-  vimState.setCount(offset+1)
+  vimState.setCount(offset + 1)
   vimState.operationStack.run('MoveToRelativeLine')
 
 normalCommands = {

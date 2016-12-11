@@ -22,8 +22,9 @@ There is no default keymap.
 
 # How to use
 
-- `11`: Move to line 11
-- `50%`: Move to 50% of buffer.
-- `15:10`: Move to column 10 of line 15
-- `!`: Toggle boolean config parameter
+- `11`: Move to line 11.
+- `+11`, `-11`: Move to relative line.
+- `50%`: Move to 50% of buffer..
+- `15:10`: Move to column 10 of line 15.
+- `!`: Toggle boolean config parameter.
 - `w`, `wq`, `split`, `vsplit` etc.

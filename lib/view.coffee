@@ -62,7 +62,7 @@ class View extends SelectListView
   hide: ->
     @panel?.hide()
 
-  getFallBackItemsFromQuery: (query) ->
+  getFallBackItemsForQuery: (query) ->
     items = []
 
     if /^!/.test(query)
@@ -71,35 +71,36 @@ class View extends SelectListView
       items = fuzzaldrin.filter(items, filterQuery, key: @getFilterKey())
 
     else if /^[+-\d]/.test(query)
-      name = null
-
-      if match = query.match(/^(\d+)+$/)
-        name = 'moveToLine'
-        options = {row: Number(match[1])}
-
-      else if match = query.match(/^(\d+)%$/)
-        name = 'moveToLineByPercent'
-        options = {percent: Number(match[1])}
-
-      else if match = query.match(/^(\d+):(\d+)$/)
-        name = 'moveToLineAndColumn'
-        options = {row: Number(match[1]), column: Number(match[2])}
-        
-      else if match = query.match(/^([+-]\d+)$/)
-        name = 'moveToRelativeLine'
-        options = {offset: Number(match[1])}
-
-      if name?
-        item = @getItem('numberCommands', name)
-        item.options = options
-        items.push(item)
+      items.push(item) if item = @getNumberCommandItem(query)
 
     items
+
+  getNumberCommandItem: (query) ->
+    if match = query.match(/^(\d+)+$/)
+      name = 'moveToLine'
+      options = {row: Number(match[1])}
+
+    else if match = query.match(/^(\d+)%$/)
+      name = 'moveToLineByPercent'
+      options = {percent: Number(match[1])}
+
+    else if match = query.match(/^(\d+):(\d+)$/)
+      name = 'moveToLineAndColumn'
+      options = {row: Number(match[1]), column: Number(match[2])}
+
+    else if match = query.match(/^([+-]\d+)$/)
+      name = 'moveToRelativeLine'
+      options = {offset: Number(match[1])}
+
+    if name?
+      item = @getItem('numberCommands', name)
+      item.options = options
+      item
 
   # Use as command missing hook.
   getEmptyMessage: (itemCount, filteredItemCount) ->
     @setError(null)
-    @setFallbackItems(@getFallBackItemsFromQuery(@getFilterQuery()))
+    @setFallbackItems(@getFallBackItemsForQuery(@getFilterQuery()))
     @selectItemView(@list.find('li:first'))
 
   setFallbackItems: (items) ->
