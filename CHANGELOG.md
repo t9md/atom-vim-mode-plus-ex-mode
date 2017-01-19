@@ -1,4 +1,4 @@
-## 0.8.0:
+## 0.8.1:
 - Keymaps: Provide default keymaps.
 
   ```coffeescript
@@ -6,6 +6,8 @@
     ':': 'vim-mode-plus-ex-mode:open'
     '!': 'vim-mode-plus-ex-mode:toggle-setting'
   ```
+
+## 0.8.0: Unpublished because of mistake.
 
 ## 0.7.1:
 - New: `Move To Relative Line` e.g. `+5`, `-5` by @gabeboning.
