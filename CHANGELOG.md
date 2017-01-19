@@ -1,3 +1,12 @@
+## 0.8.0:
+- Keymaps: Provide default keymaps.
+
+  ```coffeescript
+  'atom-text-editor.vim-mode-plus.normal-mode':
+    ':': 'vim-mode-plus-ex-mode:open'
+    '!': 'vim-mode-plus-ex-mode:toggle-setting'
+  ```
+
 ## 0.7.1:
 - New: `Move To Relative Line` e.g. `+5`, `-5` by @gabeboning.
 
