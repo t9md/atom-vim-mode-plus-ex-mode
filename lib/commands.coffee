@@ -15,6 +15,7 @@ wall = -> w({editor}) for editor in atom.workspace.getTextEditors() when editor.
 wqall = xall = -> wq() for item in atom.workspace.getPaneItems()
 split = ({editor, editorElement}) -> atom.commands.dispatch(editorElement, 'pane:split-down-and-copy-active-item')
 vsplit = ({editor, editorElement}) -> atom.commands.dispatch(editorElement, 'pane:split-right-and-copy-active-item')
+nohlsearch = ({globalState}) -> globalState.set('highlightSearchPattern', null)
 
 # Configuration switch
 # -------------------------
@@ -50,6 +51,7 @@ normalCommands = {
   q
   qall
   split, vsplit
+  nohlsearch
 }
 
 toggleCommands = {

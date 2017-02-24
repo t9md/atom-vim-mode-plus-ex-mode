@@ -1,3 +1,6 @@
+## 0.9.0:
+- New: `nohlsearch` command.
+
 ## 0.8.1:
 - Keymaps: Provide default keymaps.
 

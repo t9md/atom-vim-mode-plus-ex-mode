@@ -14,6 +14,7 @@ In `normal-mode`, following keymaps are available.
   - `15:10`: Move to line 15, column 10
   - `!`: Toggle boolean config parameter.
   - `w`, `wq`, `split`, `vsplit` etc.
+  - `nohlsearch`: to clear `highlight-search`.
 
 - `!`: `vim-mode-plus-ex-mode:toggle-setting`: toggle boolean setting-value.
   - Choose setting parameter to toggle boolean value.
