@@ -1,5 +1,9 @@
 # vim-mode-plus-ex-mode
 
+- I originally released this package for quick workaround of lack of ex-mode support.
+- But now [ex-mode](https://atom.io/packages/ex-mode) works with vim-mode-plus.
+- If you want better ex-mode, don't use this package, use [ex-mode](https://atom.io/packages/ex-mode) instead.
+
 Experimental ex-mode support for vim-mode-plus
 
 ## How to use?

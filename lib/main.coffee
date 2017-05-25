@@ -6,6 +6,8 @@ module.exports =
     @emitter = new Emitter
     @subscriptions = new CompositeDisposable
     self = this
+    @notifiedUseExMode = atom.config.get('vim-mode-plus-ex-mode.notifiedUseExMode')
+
     @subscriptions.add atom.commands.add 'atom-text-editor:not([mini])',
       'vim-mode-plus-ex-mode:open': ->
         self.toggle(@getModel(), 'normalCommands')
@@ -13,8 +15,20 @@ module.exports =
         self.toggle(@getModel(), 'toggleCommands')
 
   toggle: (editor, commandKind) ->
+    unless @notifiedUseExMode
+      @notifyUseExMode()
+      return
+
     @getEditorState(editor).then (vimState) =>
       @getView().toggle(vimState, commandKind)
+
+  notifyUseExMode: ->
+    message = """
+    Use [ex-mode](https://atom.io/packages/ex-mode) if you want better ex-mode then uninstall this package,
+    """
+    atom.notifications.addInfo(message, dismissable: true)
+    @notifiedUseExMode = true
+    atom.config.set('vim-mode-plus-ex-mode.notifiedUseExMode', @notifiedUseExMode)
 
   getEditorState: (editor) ->
     if getEditorState?
