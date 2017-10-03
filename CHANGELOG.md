@@ -1,3 +1,6 @@
+## 0.10.0:
+- Maintenance: Convert all codes from CoffeeScript to JavaScript.
+
 ## 0.9.1:
 - New: Add one-time notifcation to use original ex-mode, since it support vim-mode-plus now.
 
