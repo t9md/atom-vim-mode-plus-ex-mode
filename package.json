@@ -1,7 +1,7 @@
 {
   "name": "vim-mode-plus-ex-mode",
   "main": "./lib/main",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "Use original ex-mode instead of this package",
   "repository": "https://github.com/t9md/atom-vim-mode-plus-ex-mode",
   "license": "MIT",
