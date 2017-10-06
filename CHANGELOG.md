@@ -1,3 +1,7 @@
+## 0.10.1:
+- Maintenance:
+  - Use `Base.register` over `Base.initClass`.
+  
 ## 0.10.0:
 - Maintenance:
   - Convert Coffee-to-JS
