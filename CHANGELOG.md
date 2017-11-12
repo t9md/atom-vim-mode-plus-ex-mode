@@ -1,7 +1,9 @@
+## 0.10.2:
+- Maintenance: Remove conditional code used in vmp version migration.
 ## 0.10.1:
 - Maintenance:
   - Use `Base.register` over `Base.initClass`.
-  
+
 ## 0.10.0:
 - Maintenance:
   - Convert Coffee-to-JS
