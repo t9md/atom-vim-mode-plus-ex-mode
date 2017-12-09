@@ -1,5 +1,9 @@
+## 0.11.0:
+- Maintenance: Catchup vmp changes, no longer use service.Base, use getClass instead.
+
 ## 0.10.2:
 - Maintenance: Remove conditional code used in vmp version migration.
+
 ## 0.10.1:
 - Maintenance:
   - Use `Base.register` over `Base.initClass`.
